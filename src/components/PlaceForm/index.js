@@ -1,84 +1,67 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, Button } from 'react-native';
-import t from 'tcomb-form-native';
+import React, {Component}  from 'react';
+import {View, Text, TextInput, TouchableHighlight, Picker} from 'react-native';
 import { connect } from 'react-redux';
 import { placeCreate } from '../../actions/PlacesActions';
-import '../../styles/__form.scss';
 
-const Form = t.form.Form;
+class PlaceForm extends ValidationComponent {
 
-//All fields are required, place phone number is optional, coordinates from map
-const Place = t.struct({
-    placeType: t.String,
-    placeName: t.String,
-    phoneNumber: t.maybe(t.String)
-});
+  constructor(props) {
+    super(props);
+    this.state = {name : "My name", email: "tibtib@gmail.com", number:"56", date: "2017-03-01"};
+  }
 
-const formStyles = {
-    ...Form.stylesheet,
-    formGroup: {
-        normal: {
-            marginBottom: 10
-        },
-    },
-    controlLabel: {
-        normal: {
-            color: 'blue',
-            fontSize: 18,
-            marginBottom: 7,
-            fontWeight: '600'
-        },
-        // the style applied when a validation error occours
-        error: {
-            color: 'red',
-            fontSize: 18,
-            marginBottom: 7,
-            fontWeight: '600'
-        }
-    }
-}
+  onPressButton() {
+    // Call ValidationComponent validate method
+    this.validate({
+      placeName: {minlength:4,  required: true},
+      placeType: {required: true},
+      phoneNumber: {
+          numbers: true,
+          required: true
+      }
+    });
+  const {
+      placeName,
+      placeType,
+      phoneNumber
+  } = this.props;
 
-const options = {
-    fields: {
-        email: {
-            error: 'Without an email address how are you going to reset your password when you forget it?'
-        },
-        password: {
-            error: 'Choose something you use on a dozen other sites or something you won\'t remember'
-        },
-        terms: {
-            label: 'Agree to Terms',
-        },
-    },
-   stylesheet: formStyles,
-};
+  this.props.placeCreate({
+      placeName,
+      placeType,
+      phoneNumber
+  });
+  }
 
-class PlaceForm extends Component {
-    handleSubmit = () => {
-        const value = this._form.getValue();
-        console.log('value: ', value);
-        const {
-            placeName,
-            placeType,
-            phoneNumber
-         } = value;
+  render() {
+      return (
+        <View>
+          <TextInput ref="placeName" value={this.props.placeName} onChangeText={(value) => this.props.placeUpdate({prop: 'placeName', value})}/>
+          <TextInput ref="phoneNumber" value={this.props.placeNumber} onChangeText={(value) => this.props.placeUpdate({prop: 'placeNumber', value})} />
+          <Picker
+            ref = "placeType"
+            value={this.props.placeType}
+            style={{height: 50, width: 100}}
+            onValueChange={(itemValue, itemIndex) =>
+            {(value) => this.props.placeUpdate({prop: 'placeType', value})}
+            }>
+            <Picker.Item label="Restaurant" value="restaurant" />
+            <Picker.Item label="Home" value="home" />
+            <Picker.Item label="Park" value="park" />
+        </Picker>
 
-    }
+          <TouchableHighlight onPress={this.onPressButton}>
+            <Text>Save</Text>
+          </TouchableHighlight>
 
-    render() {
-        return (
-        <View className="container">
-            <Form ref = {c => this._form = c}
-            type = {Place}
-            options = {options}/>
-            <Button title = "Save"
-            onPress = {this.handleSubmit}
-            />
+          <Text>
+            {this.getErrorMessages()}
+          </Text>
         </View>
-        );
-    }
-}
+      );
+  }
 
+}
 //to add the coordinates
 const mapStateToProps = (state) => {
     const {
@@ -93,12 +76,6 @@ const mapStateToProps = (state) => {
         phoneNumber
     };
 };
-export default connnect (mapStateToProps, { placeCreate })(PlaceForm);
-// const styles = StyleSheet.create({
-//     container: {
-//         justifyContent: 'center',
-//         marginTop: 50,
-//         padding: 20,
-//         backgroundColor: '#ffffff',
-//     },
-// });
+export default connect(mapStateToProps, {
+    placeCreate
+})(PlaceForm);

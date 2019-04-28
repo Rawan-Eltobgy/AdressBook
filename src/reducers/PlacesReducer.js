@@ -2,7 +2,7 @@ import { PLACE_CREATE } from '../actions/types';
 
 const INITIAL_STATE = {
     placeName:'',
-    placeType:'',
+    placeType:'Restaurant',
     phoneNumber:''
 };
 
