@@ -1,0 +1,29 @@
+.container{
+    justify-content: 'center';
+    margin-top: 50;
+    padding: 20;
+    background-color: '#ffffff';
+  }
+
+
+.formGroup {
+    &-normal {
+            margin-bottom: 10;
+        }
+    }
+
+.controlLabel {
+        &-normal {
+            color: 'blue';
+            font-size: 18;
+            margin-bottom: 7;
+            font-weight: '600';
+        }
+      }
+        // the style applied when a validation error occours
+.error {
+        color: 'red';
+        font-size: 18;
+        margin-bottom: 7;
+        font-weight: '600';
+    }
